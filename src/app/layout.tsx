@@ -2,10 +2,9 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 
-export const metadata = {
-  title: "Onchain Checkout Frame",
-  description: "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+export const viewport = {
+  width: "device-width",
+  initialScale: 1.0,
 };
 
 export default function RootLayout({
