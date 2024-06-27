@@ -5,17 +5,13 @@ import { createCheckout, getCheckout, getProductData } from "@/lib/shopApi";
 import { publicViemClient } from "@/lib/viemClient";
 import { type ContractFunctionArgs, decodeFunctionData } from "viem";
 import { CheckoutsTable } from "@/server/db/schema";
-import BuyMeACoffeeABI from "@/app/_contracts/BuyMeACoffeeABI";
 import type {
   CheckoutLineItemInput,
   SelectedOptionInput,
 } from "@shopify/hydrogen-react/storefront-api-types";
+import { StockManagerABI } from "@/app/_contracts/StockManager";
 
-type BuyCoffeeArgs = ContractFunctionArgs<
-  typeof BuyMeACoffeeABI,
-  "payable",
-  "buyCoffee"
->;
+type MintArgs = ContractFunctionArgs<typeof StockManagerABI, "payable", "mint">;
 
 type GetCheckoutUrlArgs = {
   dropId: number;
@@ -58,19 +54,18 @@ export const getCheckoutUrl = async ({
   const contractAddress = transaction.to;
   const userAddress = transaction.from;
   const { args, functionName } = decodeFunctionData({
-    abi: BuyMeACoffeeABI,
+    abi: StockManagerABI,
     data: transaction.input,
   });
-  const [to, tokenId] = args as BuyCoffeeArgs;
+  const [to, tokenId] = args as MintArgs;
 
   if (dropData.contractAddress !== contractAddress) {
     throw new Error("Transaction does not belong to this drop");
   }
-  // @ts-ignore TODO: Update when proper contract ABI is ready
-  if (dropData.tokenId && dropData.tokenId !== tokenId) {
+  if (dropData.tokenId && dropData.tokenId !== Number(tokenId)) {
     throw new Error("Token ID does not match drop");
   }
-  if (functionName !== "buyCoffee") {
+  if (functionName !== "mint") {
     throw new Error("Not a mint transaction");
   }
 

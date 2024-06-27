@@ -2,7 +2,7 @@ import "server-only";
 import { db } from "@/server/db";
 import { getAllOnchainOrders } from "@/lib/shopAdminApi";
 import { publicViemClient } from "@/lib/viemClient";
-import BuyMeACoffeeABI from "@/app/_contracts/BuyMeACoffeeABI";
+import { StockManagerABI } from "@/app/_contracts/StockManager";
 
 export const getUnclaimedMintsForWallet = async (
   dropId: number,
@@ -19,9 +19,9 @@ export const getUnclaimedMintsForWallet = async (
   }
   const mintEvents = await publicViemClient.getContractEvents({
     address: dropData.contractAddress as `0x${string}`,
-    abi: BuyMeACoffeeABI,
-    eventName: "BuyMeACoffeeEvent",
-    args: { buyer: walletAddress },
+    abi: StockManagerABI,
+    eventName: "Minted",
+    args: { account: walletAddress },
     fromBlock: "earliest",
   });
   if (!mintEvents.length) {
