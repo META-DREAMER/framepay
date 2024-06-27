@@ -7,10 +7,11 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z.string().url(),
+    POSTGRES_URL: z.string().url(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    SHOPIFY_ADMIN_TOKEN: z.string(),
   },
 
   /**
@@ -19,7 +20,11 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN: z.string(),
+    NEXT_PUBLIC_SHOPIFY_TOKEN: z.string(),
+    NEXT_PUBLIC_ACTIVE_CHAIN: z.string(),
+    NEXT_PUBLIC_TESTNET_RPC: z.string(),
+    NEXT_PUBLIC_BASE_RPC: z.string(),
   },
 
   /**
@@ -27,8 +32,15 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
+    POSTGRES_URL: process.env.POSTGRES_URL,
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN:
+      process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+    SHOPIFY_ADMIN_TOKEN: process.env.SHOPIFY_ADMIN_TOKEN,
+    NEXT_PUBLIC_SHOPIFY_TOKEN: process.env.NEXT_PUBLIC_SHOPIFY_TOKEN,
+    NEXT_PUBLIC_ACTIVE_CHAIN: process.env.NEXT_PUBLIC_ACTIVE_CHAIN,
+    NEXT_PUBLIC_TESTNET_RPC: process.env.NEXT_PUBLIC_TESTNET_RPC,
+    NEXT_PUBLIC_BASE_RPC: process.env.NEXT_PUBLIC_BASE_RPC,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

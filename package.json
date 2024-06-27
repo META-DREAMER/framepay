@@ -9,22 +9,32 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "codegen": "graphql-codegen -c .graphqlrc.ts  && graphql-codegen -c .graphqlrc.ts --project storefront",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "ts": "tsc --noEmit --incremental",
+    "ts:watch": "bun ts --watch",
+    "start": "next start",
+    "predev": "bun run codegen"
   },
   "dependencies": {
+    "@shopify/admin-api-client": "^1.0.0",
+    "@shopify/hydrogen-react": "^2024.4.4",
+    "@shopify/storefront-api-client": "^1.0.0",
     "@coinbase/onchainkit": "^0.22.1",
     "@t3-oss/env-nextjs": "^0.10.1",
+    "@tanstack/react-query": "^5.45.1",
     "drizzle-orm": "^0.30.10",
     "geist": "^1.3.0",
     "next": "^14.2.1",
     "postgres": "^3.4.4",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
+    "viem": "^2.16.2",
     "zod": "^3.23.3"
   },
   "devDependencies": {
+    "@shopify/api-codegen-preset": "^1.0.1",
     "@types/eslint": "^8.56.2",
     "@types/node": "^20.11.20",
     "@types/react": "^18.2.57",
@@ -39,6 +49,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "^3.4.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   },
   "ct3aMetadata": {
