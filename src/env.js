@@ -12,6 +12,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     SHOPIFY_ADMIN_TOKEN: z.string(),
+    NEYNAR_API_KEY: z.string(),
   },
 
   /**
@@ -25,6 +26,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ACTIVE_CHAIN: z.string(),
     NEXT_PUBLIC_TESTNET_RPC: z.string(),
     NEXT_PUBLIC_BASE_RPC: z.string(),
+    NEXT_PUBLIC_URL:z.string(),
   },
 
   /**
@@ -41,6 +43,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ACTIVE_CHAIN: process.env.NEXT_PUBLIC_ACTIVE_CHAIN,
     NEXT_PUBLIC_TESTNET_RPC: process.env.NEXT_PUBLIC_TESTNET_RPC,
     NEXT_PUBLIC_BASE_RPC: process.env.NEXT_PUBLIC_BASE_RPC,
+    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+    NEYNAR_API_KEY: process.env.NEYNAR_API_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

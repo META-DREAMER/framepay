@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/server/db";
-import { getProductData } from "@/lib/shopApi";
+import { getShopifyProductData } from "@/lib/shopApi";
+import { SelectedOptionInput } from "@shopify/hydrogen-react/storefront-api-types";
 
 export const getDropProductData = async (dropId: number) => {
   const dropData = await db.query.DropsTable.findFirst({
@@ -10,7 +11,7 @@ export const getDropProductData = async (dropId: number) => {
     return null;
   }
 
-  const productData = await getProductData(dropData.shopifyProductId);
+  const productData = await getShopifyProductData(dropData.shopifyProductId);
 
   return { dropData, productData };
 };

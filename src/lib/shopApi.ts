@@ -47,13 +47,13 @@ export const getCheckout = async (checkoutId: string) => {
   >;
 };
 
-export const getProductData = async (
+export const getShopifyProductData = async (
   productId: string,
   selectedOptions?: SelectedOptionInput[],
 ) => {
   const { data, errors } = await client.request<GetProductDataQuery>(
     gql`
-      query getProductData(
+      query getShopifyProductData(
         $id: ID!
         $selectedOptions: [SelectedOptionInput!] = []
       ) {

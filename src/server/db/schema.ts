@@ -93,7 +93,7 @@ export const CheckoutsTable = createTable(
     dropId: integer("dropId")
       .references(() => DropsTable.id)
       .notNull(),
-    farcasterFid: text("farcasterFid"),
+    farcasterFid: integer("farcasterFid"),
   },
   (checkouts) => {
     return {
@@ -103,4 +103,4 @@ export const CheckoutsTable = createTable(
     };
   },
 );
-export type Checkout = InferSelectModel<typeof CheckoutsTable>;
+export type CheckoutData = InferSelectModel<typeof CheckoutsTable>;
