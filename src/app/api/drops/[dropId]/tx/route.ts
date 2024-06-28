@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { encodeFunctionData, parseEther } from "viem";
 import { baseSepolia } from "viem/chains";
 import { StockManagerABI } from "../../../../_contracts/StockManager";
-import { STOCK_MANAGER_CONTRACT_ADDR } from "../../../../config";
 import type { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 import { getDropProductData } from "@/lib/dropHelpers";
 
@@ -43,7 +42,7 @@ export async function POST(
     params: {
       abi: [],
       data,
-      to: STOCK_MANAGER_CONTRACT_ADDR,
+      to: drop.dropData.contractAddress as `0x${string}`,
       value: parseEther(drop.dropData.ethPrice).toString(), // 0.00004 ETH
     },
   };
