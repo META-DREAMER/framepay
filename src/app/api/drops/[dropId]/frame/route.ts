@@ -15,20 +15,29 @@ export async function POST(
   { params }: { params: { dropId: string } },
 ): Promise<NextResponse> {
   const body = await req.json();
-  console.log("body", body);
+
   const { isValid, message } = await getFrameMessage(body, {
     neynarApiKey: env.NEYNAR_API_KEY,
   });
-
+  console.log("message", message);
   if (!isValid) {
     return new NextResponse("Message not valid", { status: 500 });
   }
 
   const buttonId = message.button;
 
-  const state = JSON.parse(
-    decodeURIComponent(message.state?.serialized),
-  ) as FrameState;
+  let state = {
+    buttonsState: [],
+    selections: [],
+  } as FrameState;
+
+  try {
+    state = JSON.parse(
+      decodeURIComponent(message.state?.serialized),
+    ) as FrameState;
+  } catch (e) {
+    console.error("Error parsing state", e);
+  }
 
   const dropId = params.dropId;
 
