@@ -43,7 +43,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ACTIVE_CHAIN: process.env.NEXT_PUBLIC_ACTIVE_CHAIN,
     NEXT_PUBLIC_TESTNET_RPC: process.env.NEXT_PUBLIC_TESTNET_RPC,
     NEXT_PUBLIC_BASE_RPC: process.env.NEXT_PUBLIC_BASE_RPC,
-    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL || `https://${process.env.VERCEL_URL}`,
+    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL || `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
     NEYNAR_API_KEY: process.env.NEYNAR_API_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
