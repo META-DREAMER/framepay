@@ -6,6 +6,7 @@ import { getShopifyProductData } from "@/lib/shopApi";
 import {
   getFrameMessage,
   getFrameHtmlResponse,
+  FrameButtonMetadata,
 } from "@coinbase/onchainkit/frame";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -63,7 +64,7 @@ export async function POST(
     selectedOptions,
   );
 
-  let renderedButtons: any = [];
+  let renderedButtons;
   let image = productData?.featuredImage?.url;
 
   if (productWithSelectedOptions?.variantBySelectedOptions) {
@@ -130,7 +131,10 @@ export async function POST(
   console.log("final state", state.selections);
   return new NextResponse(
     getFrameHtmlResponse({
-      buttons: renderedButtons,
+      buttons: renderedButtons as [
+        FrameButtonMetadata,
+        ...FrameButtonMetadata[],
+      ],
       image,
       state,
       postUrl: `${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/frame`,

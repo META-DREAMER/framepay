@@ -10,7 +10,7 @@ import { env } from "@/env.js";
 import type {
   CreateCheckoutMutation,
   GetCheckoutQuery,
-  GetProductDataQuery,
+  GetShopifyProductDataQuery,
 } from "@/lib/storefront-generated/storefront.generated";
 import type * as StorefrontTypes from "@/lib/storefront-generated/storefront.types";
 import { createStorefrontApiClient } from "@shopify/storefront-api-client";
@@ -51,7 +51,7 @@ export const getShopifyProductData = async (
   productId: string,
   selectedOptions?: SelectedOptionInput[],
 ) => {
-  const { data, errors } = await client.request<GetProductDataQuery>(
+  const { data, errors } = await client.request<GetShopifyProductDataQuery>(
     gql`
       query getShopifyProductData(
         $id: ID!

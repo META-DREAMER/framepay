@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { NEXT_PUBLIC_URL } from "./config";
 import { getFrameMetadata } from "@coinbase/onchainkit/frame";
 import type { Metadata } from "next";
 import { env } from "@/env";
