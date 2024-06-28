@@ -23,11 +23,23 @@ export async function POST(
   if (!isValid) {
     return new NextResponse("Message not valid", { status: 500 });
   }
+  const dropId = params.dropId;
+  const product = await getDropProductData(parseInt(dropId));
+  if (!product) {
+    return new NextResponse("No drop available", { status: 500 });
+  }
 
   const buttonId = message.button;
+  const option = product?.productData?.options?.[0];
+
+  if (!option) {
+    return new NextResponse("No options available", { status: 500 });
+  }
+
+  const { buttonsState } = getButtonsWithState(option, 0);
 
   let state = {
-    buttonsState: [],
+    buttonsState: buttonsState,
     selections: [],
   } as FrameState;
 
@@ -39,16 +51,9 @@ export async function POST(
     console.error("Error parsing state", e);
   }
 
-  const dropId = params.dropId;
-
   const buttonState = state.buttonsState[buttonId - 1];
 
   const page = buttonState?.paging?.page;
-
-  const product = await getDropProductData(parseInt(dropId));
-  if (!product) {
-    return new NextResponse("No drop available", { status: 500 });
-  }
 
   const { productData, dropData } = product;
 
