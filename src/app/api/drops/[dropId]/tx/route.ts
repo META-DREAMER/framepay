@@ -29,7 +29,7 @@ export async function POST(
   if (!drop) {
     return new NextResponse("No drop exist", { status: 500 });
   }
-
+  console.log();
   const data = encodeFunctionData({
     abi: StockManagerABI,
     functionName: "mint",
