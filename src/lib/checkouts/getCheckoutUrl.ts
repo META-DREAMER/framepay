@@ -1,7 +1,11 @@
 import "server-only";
 import { db } from "@/server/db";
 import { getDropOrderForTxHash } from "@/lib/shopAdminApi";
-import { createCheckout, getCheckout, getProductData } from "@/lib/shopApi";
+import {
+  createCheckout,
+  getCheckout,
+  getShopifyProductData,
+} from "@/lib/shopApi";
 import { publicViemClient } from "@/lib/viemClient";
 import { type ContractFunctionArgs, decodeFunctionData } from "viem";
 import { CheckoutsTable } from "@/server/db/schema";
@@ -10,22 +14,25 @@ import type {
   SelectedOptionInput,
 } from "@shopify/hydrogen-react/storefront-api-types";
 import { StockManagerABI } from "@/app/_contracts/StockManager";
+import { Checkout } from "../storefront-generated/storefront.types";
 
 type MintArgs = ContractFunctionArgs<typeof StockManagerABI, "payable", "mint">;
 
 type GetCheckoutUrlArgs = {
+  expectedUserAddress: string;
   dropId: number;
   mintTxHash: `0x${string}`;
-  farcasterFid: string;
+  farcasterFid: number;
   selectedOptions: SelectedOptionInput[];
 };
 
 export const getCheckoutUrl = async ({
+  expectedUserAddress,
   dropId,
   mintTxHash,
   farcasterFid,
   selectedOptions,
-}: GetCheckoutUrlArgs) => {
+}: GetCheckoutUrlArgs): Promise<Pick<Checkout, "id" | "webUrl"> | null> => {
   // TODO: Authenticate payload to farcaster frame to ensure user matches the address that made the mint TX
   const dropData = await db.query.DropsTable.findFirst({
     where: (drops, { eq }) => eq(drops.id, dropId),
@@ -53,6 +60,11 @@ export const getCheckoutUrl = async ({
 
   const contractAddress = transaction.to;
   const userAddress = transaction.from;
+
+  if (userAddress.toLowerCase() !== expectedUserAddress.toLowerCase()) {
+    throw new Error("User address does not match expected address");
+  }
+
   const { args, functionName } = decodeFunctionData({
     abi: StockManagerABI,
     data: transaction.input,
@@ -81,21 +93,24 @@ export const getCheckoutUrl = async ({
   }
 
   if (existingCheckout) {
-    const checkoutStatus = await getCheckout(
-      existingCheckout.shopifyCheckoutId,
-    );
+    // const checkoutStatus = await getCheckout(
+    //   existingCheckout.shopifyCheckoutId,
+    // );
     return {
       id: existingCheckout.shopifyCheckoutId,
-      url: existingCheckout.url,
-      completedOrder: existingOrder,
-      checkoutStatus,
+      webUrl: existingCheckout.url,
+      // completedOrder: existingOrder,
+      // checkoutStatus,
     };
   }
 
   const productData = await Promise.all([
-    getProductData(dropData.shopifyProductId, selectedOptions),
+    getShopifyProductData(dropData.shopifyProductId, selectedOptions),
     ...dropData.products.map((product) => {
-      return getProductData(product.bundledShopifyProductId, selectedOptions);
+      return getShopifyProductData(
+        product.bundledShopifyProductId,
+        selectedOptions,
+      );
     }),
   ]);
 
@@ -103,7 +118,7 @@ export const getCheckoutUrl = async ({
     customAttributes: [
       { key: "Ethereum Address", value: userAddress },
       { key: "mintTxHash", value: mintTxHash },
-      { key: "farcasterFid", value: farcasterFid },
+      { key: "farcasterFid", value: farcasterFid.toString() },
     ],
     lineItems: productData.reduce<CheckoutLineItemInput[]>((acc, product) => {
       if (!product?.variantBySelectedOptions) {
