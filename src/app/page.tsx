@@ -2,21 +2,22 @@ import Link from "next/link";
 import { NEXT_PUBLIC_URL } from "./config";
 import { getFrameMetadata } from "@coinbase/onchainkit/frame";
 import type { Metadata } from "next";
+import { env } from "@/env";
 
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
       action: "tx",
       label: "Buy Now!",
-      target: `${NEXT_PUBLIC_URL}/api/tx`,
-      postUrl: `${NEXT_PUBLIC_URL}/api/tx-success`,
+      target: `${env.NEXT_PUBLIC_URL}/api/tx`,
+      postUrl: `${env.NEXT_PUBLIC_URL}/api/tx-success`,
     },
   ],
   image: {
-    src: `${NEXT_PUBLIC_URL}/park-3.png`,
+    src: `${env.NEXT_PUBLIC_URL}/park-3.png`,
     aspectRatio: "1:1",
   },
-  postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+  postUrl: `${env.NEXT_PUBLIC_URL}/api/frame`,
 });
 
 export const metadata: Metadata = {
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     title: "Onchain Checkout Frame",
     description:
       "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
-    images: [`${NEXT_PUBLIC_URL}/park-1.png`],
+    images: [`${env.NEXT_PUBLIC_URL}/park-1.png`],
   },
   other: {
     ...frameMetadata,
