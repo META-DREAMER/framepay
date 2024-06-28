@@ -32,8 +32,8 @@ export const DropsTable = createTable(
     chainId: integer("chainId").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     shopifyProductId: text("shopifyProductId").notNull(),
-    startsAt: timestamp("startsAt").notNull(),
-    endsAt: timestamp("endsAt").notNull(),
+    startsAt: timestamp("startsAt"),
+    endsAt: timestamp("endsAt"),
     ethPrice: numeric("ethPrice").notNull().default("0"),
   },
   (drops) => {
