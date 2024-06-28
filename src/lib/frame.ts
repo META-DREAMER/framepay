@@ -1,4 +1,3 @@
-import { env } from "@/env";
 import { FrameButtonMetadata } from "@coinbase/onchainkit/frame";
 import { ProductOption } from "@shopify/hydrogen-react/storefront-api-types";
 

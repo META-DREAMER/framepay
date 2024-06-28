@@ -17,7 +17,6 @@ export async function POST(
   const body = await req.json();
   const { isValid, message } = await getFrameMessage(body, {
     neynarApiKey: env.NEYNAR_API_KEY,
-    allowFramegear: true,
   });
 
   if (!isValid) {
@@ -29,11 +28,11 @@ export async function POST(
   const state = JSON.parse(
     decodeURIComponent(message.state?.serialized),
   ) as FrameState;
-  console.log("the state", JSON.stringify(state, null, 2));
+
   const dropId = params.dropId;
 
   const buttonState = state.buttonsState[buttonId - 1];
-  console.log("the buton state", JSON.stringify(buttonState, null, 2));
+
   const page = buttonState?.paging?.page;
 
   const product = await getDropProductData(parseInt(dropId));
