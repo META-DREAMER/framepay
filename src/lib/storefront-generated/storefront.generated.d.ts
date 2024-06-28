@@ -24,19 +24,6 @@ export type GetProductDataQuery = { product?: StorefrontTypes.Maybe<(
     )> }
   )> };
 
-export type GetVariantQueryVariables = StorefrontTypes.Exact<{
-  id: StorefrontTypes.Scalars['ID']['input'];
-}>;
-
-
-export type GetVariantQuery = { product?: StorefrontTypes.Maybe<(
-    Pick<StorefrontTypes.Product, 'id' | 'title'>
-    & { variants: { edges: Array<{ node: (
-          Pick<StorefrontTypes.ProductVariant, 'id' | 'title' | 'sku'>
-          & { priceV2: Pick<StorefrontTypes.MoneyV2, 'amount' | 'currencyCode'> }
-        ) }> } }
-  )> };
-
 export type CreateCheckoutMutationVariables = StorefrontTypes.Exact<{
   input: StorefrontTypes.CheckoutCreateInput;
 }>;
@@ -46,8 +33,7 @@ export type CreateCheckoutMutation = { checkoutCreate?: StorefrontTypes.Maybe<{ 
 
 interface GeneratedQueryTypes {
   "\n      query getCheckout($checkoutId: ID!) {\n        node(id: $checkoutId) {\n          id\n          ... on Checkout {\n            completedAt\n            orderStatusUrl\n          }\n        }\n      }\n    ": {return: GetCheckoutQuery, variables: GetCheckoutQueryVariables},
-  "\n      query getProductData($id: ID!, $selectedOptions: [SelectedOptionInput!] = []) {\n        product(id: $id) {\n          id\n          title\n          handle\n          description\n          featuredImage {\n            url\n            height\n            width\n          }\n          options {\n            name\n            values\n          }\n          variantBySelectedOptions(selectedOptions: $selectedOptions, caseInsensitiveMatch: true) {\n            id\n            title\n            selectedOptions {\n              value\n              name\n            }\n            availableForSale\n            image {\n              url\n              height\n              width\n            }\n          }\n        }\n      }\n    ": {return: GetProductDataQuery, variables: GetProductDataQueryVariables},
-  "\n      query GetVariant($id: ID!) {\n        product(id: $id) {\n          id\n          title\n          variants(first: 30) {\n            # Adjust the 'first' parameter as needed\n            edges {\n              node {\n                id\n                title\n                sku\n                priceV2 {\n                  amount\n                  currencyCode\n                }\n              }\n            }\n          }\n        }\n      }\n    ": {return: GetVariantQuery, variables: GetVariantQueryVariables},
+  "\n      query getProductData(\n        $id: ID!\n        $selectedOptions: [SelectedOptionInput!] = []\n      ) {\n        product(id: $id) {\n          id\n          title\n          handle\n          description\n          featuredImage {\n            url\n            height\n            width\n          }\n          options {\n            name\n            values\n          }\n          variantBySelectedOptions(\n            selectedOptions: $selectedOptions\n            caseInsensitiveMatch: true\n            ignoreUnknownOptions: true\n          ) {\n            id\n            title\n            selectedOptions {\n              value\n              name\n            }\n            availableForSale\n            image {\n              url\n              height\n              width\n            }\n          }\n        }\n      }\n    ": {return: GetProductDataQuery, variables: GetProductDataQueryVariables},
 }
 
 interface GeneratedMutationTypes {

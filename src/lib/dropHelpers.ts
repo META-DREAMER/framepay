@@ -5,13 +5,12 @@ import { getProductData } from "@/lib/shopApi";
 export const getDropProductData = async (dropId: number) => {
   const dropData = await db.query.DropsTable.findFirst({
     where: (drops, { eq }) => eq(drops.id, dropId),
-    with: {
-      products: true,
-    },
   });
   if (!dropData) {
-    throw new Error("Drop not found");
+    return null;
   }
 
-  return getProductData(dropData.shopifyProductId);
+  const productData = await getProductData(dropData.shopifyProductId);
+
+  return { dropData, productData };
 };
