@@ -15,6 +15,7 @@ export async function POST(
   { params }: { params: { dropId: string } },
 ): Promise<NextResponse> {
   const body = await req.json();
+  console.log("body", body);
   const { isValid, message } = await getFrameMessage(body, {
     neynarApiKey: env.NEYNAR_API_KEY,
   });
