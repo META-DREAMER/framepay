@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getFrameMetadata } from "@coinbase/onchainkit/frame";
 import type { Metadata } from "next";
 import { getDropProductData } from "@/lib/dropHelpers";
-import { ButtonState, getButtonsWithState } from "@/lib/frame";
+import { type ButtonState, getButtonsWithState } from "@/lib/frame";
 import { env } from "@/env";
 
 type Props = {
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
   const data = await getDropProductData(parseInt(dropId));
   const product = data?.productData;
   const option = product?.options?.[0];
-
+  console.log(data?.productData?.featuredImage);
   if (!option) {
     const frameMetadata = getFrameMetadata({
       buttons: [

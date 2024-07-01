@@ -1,4 +1,4 @@
-import { FrameState } from "@/app/[dropId]/page";
+import { type FrameState } from "@/app/[dropId]/page";
 import { env } from "@/env";
 import { getDropProductData } from "@/lib/dropHelpers";
 import { getButtonsWithState } from "@/lib/frame";
@@ -6,9 +6,9 @@ import { getShopifyProductData } from "@/lib/shopApi";
 import {
   getFrameMessage,
   getFrameHtmlResponse,
-  FrameButtonMetadata,
+  type FrameButtonMetadata,
 } from "@coinbase/onchainkit/frame";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
@@ -25,6 +25,7 @@ export async function POST(
   }
   const dropId = params.dropId;
   const product = await getDropProductData(parseInt(dropId));
+  console.log(product);
   if (!product) {
     return new NextResponse("No drop available", { status: 500 });
   }

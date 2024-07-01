@@ -1,9 +1,9 @@
 import {
-  FrameRequest,
+  type FrameRequest,
   getFrameMessage,
   getFrameHtmlResponse,
 } from "@coinbase/onchainkit/frame";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getCheckoutUrl } from "@/lib/checkouts/getCheckoutUrl";
 import { getDropProductData } from "@/lib/dropHelpers";
 
@@ -50,7 +50,7 @@ export async function POST(
     return new NextResponse("No drop available", { status: 500 });
   }
 
-  const fid = body?.untrustedData?.fid;
+  const fid = message.interactor.fid;
 
   const checkout = await getCheckoutUrl({
     expectedUserAddress: message.address,
