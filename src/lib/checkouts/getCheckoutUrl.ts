@@ -64,11 +64,14 @@ export const getCheckoutUrl = async ({
     data: transaction.input,
   });
   const [to, tokenId] = args as MintArgs;
-  console.log({ to, tokenId, expectedUserAddress });
+  console.log({ to, tokenId, expectedUserAddress, contractAddress });
   if (to.toLowerCase() !== expectedUserAddress.toLowerCase()) {
     throw new Error("User address does not match expected address");
   }
-  if (dropData.contractAddress !== contractAddress) {
+  if (
+    !contractAddress ||
+    dropData.contractAddress.toLowerCase() !== contractAddress.toLowerCase()
+  ) {
     throw new Error("Transaction does not belong to this drop");
   }
   if (dropData.tokenId && dropData.tokenId !== Number(tokenId)) {

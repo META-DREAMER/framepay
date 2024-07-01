@@ -28,7 +28,7 @@ export const DropsTable = createTable(
     id: serial("id").primaryKey(),
     name: text("name").notNull(),
     contractAddress: text("contractAddress").notNull(),
-    tokenId: integer("tokenId"),
+    tokenId: integer("tokenId").notNull(),
     chainId: integer("chainId").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     shopifyProductId: text("shopifyProductId").notNull(),

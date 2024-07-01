@@ -3,6 +3,7 @@ import type {
   FrameValidationData,
 } from "@coinbase/onchainkit/frame";
 import { type ProductOption } from "@shopify/hydrogen-react/storefront-api-types";
+import { env } from "@/env";
 
 export type ButtonState = {
   selection?: {
@@ -18,6 +19,7 @@ export type ButtonState = {
 export type ButtonsWithState = {
   buttons: FrameButtonMetadata[];
   buttonsState: ButtonState[];
+  imageText?: string;
 };
 
 export const getFarcasterAccountAddress = (
@@ -25,6 +27,20 @@ export const getFarcasterAccountAddress = (
 ) => {
   // Get the first verified account or custody account if first verified account doesn't exist
   return interactor.verified_accounts[0] ?? interactor.custody_address;
+};
+
+export const getImageForFrame = (
+  dropId: string,
+  productImageUrl: string,
+  bottomText?: string,
+) => {
+  const imageUrl = new URL(`${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/img`);
+  imageUrl.searchParams.set("imageUrl", productImageUrl);
+  if (bottomText) imageUrl.searchParams.set("bottomText", bottomText);
+  return {
+    src: imageUrl.toString(),
+    aspectRatio: "1:1" as const,
+  };
 };
 
 export function getButtonsWithState(
@@ -54,6 +70,7 @@ export function getButtonsWithState(
     return {
       buttons,
       buttonsState,
+      imageText: `Select ${option.name}`,
     };
   }
 

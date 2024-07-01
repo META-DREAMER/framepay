@@ -2,7 +2,11 @@ import Link from "next/link";
 import { getFrameMetadata } from "@coinbase/onchainkit/frame";
 import type { Metadata } from "next";
 import { getDropProductData } from "@/lib/dropHelpers";
-import { type ButtonState, getButtonsWithState } from "@/lib/frame";
+import {
+  type ButtonState,
+  getButtonsWithState,
+  getImageForFrame,
+} from "@/lib/frame";
 import { env } from "@/env";
 
 type Props = {
@@ -15,6 +19,8 @@ export type FrameState = {
   buttonsState: ButtonState[];
 };
 
+export const revalidate = 0;
+
 export async function generateMetadata({ params }: Props): Promise<any> {
   // read route params
   const dropId = params.dropId;
@@ -24,6 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
   const option = product?.options?.[0];
   console.log(data?.productData?.featuredImage);
   if (!option) {
+    const frameImage = getImageForFrame(dropId, product?.featuredImage?.url);
     const frameMetadata = getFrameMetadata({
       buttons: [
         {
@@ -33,11 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
           postUrl: `${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/tx-success`,
         },
       ],
-      image: {
-        src: product?.featuredImage?.url,
-        aspectRatio: "1:1",
-      },
-      postUrl: `${env.NEXT_PUBLIC_URL}/api/frame`,
+      image: frameImage,
     });
 
     const metadata: Metadata = {
@@ -47,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
         title: "Onchain Checkout Frame",
         description:
           "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
-        images: [product?.featuredImage?.url],
+        images: [frameImage.src],
       },
       other: {
         ...frameMetadata,
@@ -57,14 +60,11 @@ export async function generateMetadata({ params }: Props): Promise<any> {
     return metadata;
   }
 
-  const { buttons, buttonsState } = getButtonsWithState(option, 0);
+  const { buttons, buttonsState, imageText } = getButtonsWithState(option, 0);
   const frameMetadata = getFrameMetadata({
     // @ts-ignore
     buttons,
-    image: {
-      src: product?.featuredImage?.url,
-      aspectRatio: "1:1",
-    },
+    image: getImageForFrame(dropId, product?.featuredImage?.url, imageText),
     postUrl: `${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/frame`,
     state: {
       selections: [],

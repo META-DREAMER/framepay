@@ -1,7 +1,7 @@
 import { type FrameState } from "@/app/[dropId]/page";
 import { env } from "@/env";
 import { getDropProductData } from "@/lib/dropHelpers";
-import { getButtonsWithState } from "@/lib/frame";
+import { getButtonsWithState, getImageForFrame } from "@/lib/frame";
 import { getShopifyProductData } from "@/lib/shopApi";
 import {
   getFrameMessage,
@@ -25,7 +25,6 @@ export async function POST(
   }
   const dropId = params.dropId;
   const product = await getDropProductData(parseInt(dropId));
-  console.log(product);
   if (!product) {
     return new NextResponse("No drop available", { status: 500 });
   }
@@ -80,9 +79,10 @@ export async function POST(
   );
 
   let renderedButtons;
-  let image = productData?.featuredImage?.url;
+  let image = getImageForFrame(dropId, productData.featuredImage?.url);
 
   if (productWithSelectedOptions?.variantBySelectedOptions) {
+    // User has selected all options
     renderedButtons = [
       {
         action: "tx",
@@ -91,11 +91,12 @@ export async function POST(
         postUrl: `${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/tx-success`,
       },
     ];
-    image = {
-      src:
-        productWithSelectedOptions?.variantBySelectedOptions?.image?.url ||
-        productData?.featuredImage?.url,
-    };
+    image = getImageForFrame(
+      dropId,
+      productWithSelectedOptions?.variantBySelectedOptions?.image?.url ||
+        productData.featuredImage?.url,
+      `${selectedOptions.map((option) => `${option.name}: ${option.value}`).join(", ")}`,
+    );
   } else if (page) {
     // next page
     const currentOptionName = buttonState.paging?.currentName;
@@ -117,10 +118,11 @@ export async function POST(
       page,
     );
     renderedButtons = buttons;
-    image = {
-      src: product?.productData?.featuredImage?.url,
-      aspectRatio: "1:1",
-    };
+    image = getImageForFrame(
+      dropId,
+      productData.featuredImage?.url,
+      `Select ${currentOptionName}`,
+    );
     state.buttonsState = buttonsState;
   } else {
     const remainingOptions = productData.options.filter(
@@ -137,10 +139,11 @@ export async function POST(
 
     const { buttons, buttonsState } = getButtonsWithState(theOption, 0);
     renderedButtons = buttons;
-    image = {
-      src: product?.productData?.featuredImage?.url,
-      aspectRatio: "1:1",
-    };
+    image = getImageForFrame(
+      dropId,
+      productData.featuredImage?.url,
+      `Select ${theOption.name}`,
+    );
     state.buttonsState = buttonsState;
   }
   console.log("final state", state.selections);

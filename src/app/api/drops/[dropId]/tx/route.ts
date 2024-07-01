@@ -1,10 +1,9 @@
 import { type FrameRequest, getFrameMessage } from "@coinbase/onchainkit/frame";
 import { type NextRequest, NextResponse } from "next/server";
 import { encodeFunctionData, parseEther } from "viem";
-import { FrameMintTxABI, StockManagerABI } from "@/app/_contracts/StockManager";
+import { FrameMintTxABI } from "@/app/_contracts/StockManager";
 import type { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 import { getDropProductData } from "@/lib/dropHelpers";
-import { ACTIVE_CHAIN_ID } from "@/lib/viemClient";
 import { getFarcasterAccountAddress } from "@/lib/frame";
 
 export async function POST(
@@ -38,7 +37,7 @@ export async function POST(
     functionName: "mint",
     args: [
       mintToAddress as `0x${string}`,
-      BigInt(params.dropId),
+      BigInt(drop.dropData.tokenId),
       BigInt(1),
       "0x0",
     ],
@@ -46,7 +45,7 @@ export async function POST(
 
   console.log("Data for TX", data);
   const txData: FrameTransactionResponse = {
-    chainId: `eip155:${ACTIVE_CHAIN_ID}`,
+    chainId: `eip155:${drop.dropData.chainId}`,
     method: "eth_sendTransaction",
     params: {
       abi: FrameMintTxABI,

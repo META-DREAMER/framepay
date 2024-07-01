@@ -7,7 +7,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getCheckoutUrl } from "@/lib/checkouts/getCheckoutUrl";
 import { getDropProductData } from "@/lib/dropHelpers";
 import type { FrameState } from "@/app/[dropId]/page";
-import { getFarcasterAccountAddress } from "@/lib/frame";
+import { getFarcasterAccountAddress, getImageForFrame } from "@/lib/frame";
 
 export async function POST(
   req: NextRequest,
@@ -65,19 +65,22 @@ export async function POST(
   if (!checkout) {
     return new NextResponse("No checkout available", { status: 500 });
   }
-
+  const frameImg = getImageForFrame(
+    params.dropId,
+    drop.productData?.variantBySelectedOptions?.image?.url ||
+      drop.productData?.featuredImage?.url,
+    "Provide your shipping details with the button below.",
+  );
   return new NextResponse(
     getFrameHtmlResponse({
       buttons: [
         {
-          label: `Checkout!`,
-          action: "post_redirect",
+          label: `Complete Checkout`,
+          action: "link",
           target: checkout?.webUrl,
         },
       ],
-      image: {
-        src: drop.productData?.featuredImage?.url,
-      },
+      image: frameImg,
     }),
   );
 }
