@@ -1,5 +1,8 @@
-import { FrameButtonMetadata } from "@coinbase/onchainkit/frame";
-import { ProductOption } from "@shopify/hydrogen-react/storefront-api-types";
+import type {
+  FrameButtonMetadata,
+  FrameValidationData,
+} from "@coinbase/onchainkit/frame";
+import { type ProductOption } from "@shopify/hydrogen-react/storefront-api-types";
 
 export type ButtonState = {
   selection?: {
@@ -15,6 +18,13 @@ export type ButtonState = {
 export type ButtonsWithState = {
   buttons: FrameButtonMetadata[];
   buttonsState: ButtonState[];
+};
+
+export const getFarcasterAccountAddress = (
+  interactor: FrameValidationData["interactor"],
+) => {
+  // Get the first verified account or custody account if first verified account doesn't exist
+  return interactor.verified_accounts[0] ?? interactor.custody_address;
 };
 
 export function getButtonsWithState(

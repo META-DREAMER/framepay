@@ -14,7 +14,7 @@ import type {
   SelectedOptionInput,
 } from "@shopify/hydrogen-react/storefront-api-types";
 import { StockManagerABI } from "@/app/_contracts/StockManager";
-import { Checkout } from "../storefront-generated/storefront.types";
+import { type Checkout } from "../storefront-generated/storefront.types";
 
 type MintArgs = ContractFunctionArgs<typeof StockManagerABI, "payable", "mint">;
 
@@ -61,16 +61,14 @@ export const getCheckoutUrl = async ({
   const contractAddress = transaction.to;
   const userAddress = transaction.from;
 
-  if (userAddress.toLowerCase() !== expectedUserAddress.toLowerCase()) {
-    throw new Error("User address does not match expected address");
-  }
-
   const { args, functionName } = decodeFunctionData({
     abi: StockManagerABI,
     data: transaction.input,
   });
   const [to, tokenId] = args as MintArgs;
-
+  if (to.toLowerCase() !== expectedUserAddress.toLowerCase()) {
+    throw new Error("User address does not match expected address");
+  }
   if (dropData.contractAddress !== contractAddress) {
     throw new Error("Transaction does not belong to this drop");
   }

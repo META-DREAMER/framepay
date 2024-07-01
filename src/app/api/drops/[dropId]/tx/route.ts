@@ -5,6 +5,7 @@ import { FrameMintTxABI, StockManagerABI } from "@/app/_contracts/StockManager";
 import type { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 import { getDropProductData } from "@/lib/dropHelpers";
 import { ACTIVE_CHAIN_ID } from "@/lib/viemClient";
+import { getFarcasterAccountAddress } from "@/lib/frame";
 
 export async function POST(
   req: NextRequest,
@@ -22,10 +23,11 @@ export async function POST(
     return new NextResponse("Message not valid", { status: 500 });
   }
 
-  if (!message.address) {
+  const mintToAddress = getFarcasterAccountAddress(message.interactor);
+
+  if (!mintToAddress) {
     return new NextResponse("No wallet address provided", { status: 500 });
   }
-
   const drop = await getDropProductData(parseInt(params.dropId));
   console.log("Drop for tx", drop);
   if (!drop) {
@@ -35,7 +37,7 @@ export async function POST(
     abi: FrameMintTxABI,
     functionName: "mint",
     args: [
-      message.address as `0x${string}`,
+      mintToAddress as `0x${string}`,
       BigInt(params.dropId),
       BigInt(1),
       "0x0",
