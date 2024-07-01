@@ -58,13 +58,13 @@ export const getCheckoutUrl = async ({
   });
 
   const contractAddress = transaction.to;
-  const userAddress = transaction.from;
 
   const { args, functionName } = decodeFunctionData({
     abi: StockManagerABI,
     data: transaction.input,
   });
   const [to, tokenId] = args as MintArgs;
+  console.log({ to, tokenId, expectedUserAddress });
   if (to.toLowerCase() !== expectedUserAddress.toLowerCase()) {
     throw new Error("User address does not match expected address");
   }
@@ -84,6 +84,7 @@ export const getCheckoutUrl = async ({
     where: (checkouts, { ilike }) =>
       ilike(checkouts.transactionHash, mintTxHash),
   });
+  console.log("existingOrder / checkout", existingOrder, existingCheckout);
 
   if (existingOrder && !existingCheckout) {
     return null;
@@ -113,7 +114,7 @@ export const getCheckoutUrl = async ({
 
   const createCheckoutRes = await createCheckout({
     customAttributes: [
-      { key: "Ethereum Address", value: userAddress },
+      { key: "Ethereum Address", value: expectedUserAddress },
       { key: "mintTxHash", value: mintTxHash },
       { key: "farcasterFid", value: farcasterFid.toString() },
     ],
@@ -145,7 +146,7 @@ export const getCheckoutUrl = async ({
     url: checkout.webUrl,
     shopifyCheckoutId: checkout.id,
     dropId,
-    walletAddress: userAddress,
+    walletAddress: expectedUserAddress,
     farcasterFid,
   });
 

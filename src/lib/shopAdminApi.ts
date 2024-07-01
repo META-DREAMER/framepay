@@ -59,6 +59,7 @@ export const getDropOrderForTxHash = async (
     },
   );
   if (!data || errors) {
+    console.log("failed to get drop orders", errors);
     throw new Error(
       `Failed to fetch drop orders: ${errors?.message || "no data"}`,
     );
