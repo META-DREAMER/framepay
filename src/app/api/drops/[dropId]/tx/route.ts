@@ -8,13 +8,14 @@ import { ACTIVE_CHAIN_ID } from "@/lib/viemClient";
 
 export async function POST(
   req: NextRequest,
-  { dropId }: { dropId: string },
+  { params }: { params: { dropId: string } },
 ): Promise<NextResponse | Response> {
   const body: FrameRequest = await req.json();
 
   const { isValid, message } = await getFrameMessage(body, {
     neynarApiKey: process.env.NEYNAR_API_KEY,
   });
+  console.log("params for tx", params);
   console.log("message for tx", message);
 
   if (!isValid) {
@@ -25,15 +26,20 @@ export async function POST(
     return new NextResponse("No wallet address provided", { status: 500 });
   }
 
-  const drop = await getDropProductData(parseInt(dropId));
+  const drop = await getDropProductData(parseInt(params.dropId));
   console.log("Drop for tx", drop);
   if (!drop) {
     return new NextResponse("No drop exist", { status: 500 });
   }
   const data = encodeFunctionData({
-    abi: StockManagerABI,
+    abi: FrameMintTxABI,
     functionName: "mint",
-    args: [message.address as `0x${string}`, BigInt(dropId), BigInt(1), "0x0"],
+    args: [
+      message.address as `0x${string}`,
+      BigInt(params.dropId),
+      BigInt(1),
+      "0x0",
+    ],
   });
 
   console.log("Data for TX", data);

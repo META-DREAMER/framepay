@@ -9,13 +9,13 @@ import { getDropProductData } from "@/lib/dropHelpers";
 
 export async function POST(
   req: NextRequest,
-  { dropId }: { dropId: string },
+  { params }: { params: { dropId: string } },
 ): Promise<NextResponse> {
   const body: FrameRequest = await req.json();
-  const params = req.nextUrl.searchParams;
+  const searchParams = req.nextUrl.searchParams;
 
   const selectedOptions = [];
-  for (const entry of params.entries()) {
+  for (const entry of searchParams.entries()) {
     const [key, value] = entry;
     selectedOptions.push({
       name: key,
@@ -35,7 +35,7 @@ export async function POST(
     return new NextResponse("Message not valid", { status: 500 });
   }
 
-  const drop = await getDropProductData(parseInt(dropId));
+  const drop = await getDropProductData(parseInt(params.dropId));
 
   if (!drop) {
     return new NextResponse("No drop exist", { status: 500 });
@@ -54,7 +54,7 @@ export async function POST(
 
   const checkout = await getCheckoutUrl({
     expectedUserAddress: message.address,
-    dropId: parseInt(dropId),
+    dropId: parseInt(params.dropId),
     mintTxHash: txHash,
     farcasterFid: fid,
     selectedOptions,
