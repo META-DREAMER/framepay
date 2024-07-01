@@ -43,8 +43,7 @@ export const getCheckoutUrl = async ({
   if (!dropData) {
     throw new Error("Drop not found");
   }
-
-  const transactionReceipt = await publicViemClient.getTransactionReceipt({
+  const transactionReceipt = await publicViemClient.waitForTransactionReceipt({
     hash: mintTxHash,
   });
 
