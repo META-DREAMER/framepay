@@ -15,6 +15,7 @@ export async function POST(
   const { isValid, message } = await getFrameMessage(body, {
     neynarApiKey: process.env.NEYNAR_API_KEY,
   });
+  console.log("message for tx", message);
 
   if (!isValid) {
     return new NextResponse("Message not valid", { status: 500 });
@@ -25,7 +26,7 @@ export async function POST(
   }
 
   const drop = await getDropProductData(parseInt(dropId));
-
+  console.log("Drop for tx", drop);
   if (!drop) {
     return new NextResponse("No drop exist", { status: 500 });
   }
