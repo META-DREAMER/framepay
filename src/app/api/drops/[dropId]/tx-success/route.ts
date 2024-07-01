@@ -13,7 +13,6 @@ export async function POST(
 ): Promise<NextResponse> {
   const body: FrameRequest = await req.json();
   const searchParams = req.nextUrl.searchParams;
-
   const selectedOptions = [];
   for (const entry of searchParams.entries()) {
     const [key, value] = entry;
@@ -22,9 +21,10 @@ export async function POST(
       value: value,
     });
   }
+  console.log("body + options", body, selectedOptions);
 
   const { isValid, message } = await getFrameMessage(body);
-
+  console.log("message success", message);
   if (!message?.address) {
     return new NextResponse("No wallet address from frame message", {
       status: 500,
@@ -38,16 +38,13 @@ export async function POST(
   const drop = await getDropProductData(parseInt(params.dropId));
 
   if (!drop) {
-    return new NextResponse("No drop exist", { status: 500 });
+    return new NextResponse("No drop exist", { status: 404 });
   }
 
-  if (!drop) {
-    return new NextResponse("No drop available", { status: 500 });
-  }
   // create checkout
   const txHash = body?.untrustedData?.transactionId as `0x${string}`;
   if (!txHash) {
-    return new NextResponse("No drop available", { status: 500 });
+    return new NextResponse("No tx hash given", { status: 500 });
   }
 
   const fid = message.interactor.fid;
@@ -59,7 +56,7 @@ export async function POST(
     farcasterFid: fid,
     selectedOptions,
   });
-
+  console.log("checkout success", checkout);
   if (!checkout) {
     return new NextResponse("No checkout available", { status: 500 });
   }
