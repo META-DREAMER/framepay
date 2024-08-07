@@ -43,7 +43,7 @@ export default function HomePage() {
         {/* github link */}
         <Link
           className="font-mono text-xl font-bold text-gray-400 hover:underline"
-          href="https://github.com/META-DREAMER/onchain-checkout-frame"
+          href="https://github.com/META-DREAMER/framepay"
           target={"_blank"}
         >
           Github
