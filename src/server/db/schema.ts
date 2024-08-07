@@ -18,7 +18,9 @@ import {
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `framepay_${name}`);
+export const createTable = pgTableCreator(
+  (name) => `onchain-checkout-frame_${name}`,
+);
 
 export const DropsTable = createTable(
   "drops",
