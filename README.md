@@ -1,4 +1,4 @@
-# Onchain Checkout Frame
+# FramePay
 
 NextJS + Drizzle + TailwindCSS + TypeScript app for farcaster frame to mint + redeem a physical item via Shopify.
 
