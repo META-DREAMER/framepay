@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.POSTGRES_URL,
   },
-  tablesFilter: ["onchain-checkout-frame_*"],
+  tablesFilter: ["framepay_*"],
 } satisfies Config;
