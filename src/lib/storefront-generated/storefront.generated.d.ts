@@ -20,7 +20,7 @@ export type GetShopifyProductDataQuery = { product?: StorefrontTypes.Maybe<(
     Pick<StorefrontTypes.Product, 'id' | 'title' | 'handle' | 'description'>
     & { featuredImage?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Image, 'url' | 'height' | 'width'>>, options: Array<Pick<StorefrontTypes.ProductOption, 'name' | 'values'>>, variantBySelectedOptions?: StorefrontTypes.Maybe<(
       Pick<StorefrontTypes.ProductVariant, 'id' | 'title' | 'availableForSale'>
-      & { selectedOptions: Array<Pick<StorefrontTypes.SelectedOption, 'value' | 'name'>>, image?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Image, 'url' | 'height' | 'width'>> }
+      & { selectedOptions: Array<Pick<StorefrontTypes.SelectedOption, 'value' | 'name'>>, metafield?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Metafield, 'value'>>, image?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Image, 'url' | 'height' | 'width'>> }
     )> }
   )> };
 
@@ -33,7 +33,7 @@ export type CreateCheckoutMutation = { checkoutCreate?: StorefrontTypes.Maybe<{ 
 
 interface GeneratedQueryTypes {
   "\n      query getCheckout($checkoutId: ID!) {\n        node(id: $checkoutId) {\n          id\n          ... on Checkout {\n            completedAt\n            orderStatusUrl\n          }\n        }\n      }\n    ": {return: GetCheckoutQuery, variables: GetCheckoutQueryVariables},
-  "\n      query getShopifyProductData(\n        $id: ID!\n        $selectedOptions: [SelectedOptionInput!] = []\n      ) {\n        product(id: $id) {\n          id\n          title\n          handle\n          description\n          featuredImage {\n            url\n            height\n            width\n          }\n          options {\n            name\n            values\n          }\n          variantBySelectedOptions(\n            selectedOptions: $selectedOptions\n            caseInsensitiveMatch: true\n            ignoreUnknownOptions: true\n          ) {\n            id\n            title\n            selectedOptions {\n              value\n              name\n            }\n            availableForSale\n            image {\n              url\n              height\n              width\n            }\n          }\n        }\n      }\n    ": {return: GetShopifyProductDataQuery, variables: GetShopifyProductDataQueryVariables},
+  "\n      query getShopifyProductData(\n        $id: ID!\n        $selectedOptions: [SelectedOptionInput!] = []\n      ) {\n        product(id: $id) {\n          id\n          title\n          handle\n          description\n          featuredImage {\n            url\n            height\n            width\n          }\n          options {\n            name\n            values\n          }\n          variantBySelectedOptions(\n            selectedOptions: $selectedOptions\n            caseInsensitiveMatch: true\n            ignoreUnknownOptions: true\n          ) {\n            id\n            title\n            selectedOptions {\n              value\n              name\n            }\n            availableForSale\n            metafield(namespace: \"custom\", key: \"bundled_products\") {\n              value\n            }\n            image {\n              url\n              height\n              width\n            }\n          }\n        }\n      }\n    ": {return: GetShopifyProductDataQuery, variables: GetShopifyProductDataQueryVariables},
 }
 
 interface GeneratedMutationTypes {

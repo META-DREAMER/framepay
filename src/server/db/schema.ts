@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { type InferSelectModel, relations } from "drizzle-orm";
+import { type InferSelectModel } from "drizzle-orm";
 import {
   text,
   numeric,
@@ -18,9 +18,7 @@ import {
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator(
-  (name) => `onchain-checkout-frame_${name}`,
-);
+export const createTable = pgTableCreator((name) => `framepay_${name}`);
 
 export const DropsTable = createTable(
   "drops",
@@ -38,7 +36,7 @@ export const DropsTable = createTable(
   },
   (drops) => {
     return {
-      contractTokenUnique: uniqueIndex("contract_token_unique").on(
+      contractTokenUnique: uniqueIndex("fp_contract_token_unique").on(
         drops.contractAddress,
         drops.tokenId,
       ),
@@ -46,41 +44,7 @@ export const DropsTable = createTable(
   },
 );
 
-export const dropsRelations = relations(DropsTable, ({ many }) => ({
-  products: many(DropBundledProducts),
-}));
-
-// Drop Shopify Products Table (One-to-Many Relationship)
-export const DropBundledProducts = createTable(
-  "drop_bundled_products",
-  {
-    dropId: integer("dropId")
-      .notNull()
-      .references(() => DropsTable.id),
-    bundledShopifyProductId: text("bundledShopifyProductId").notNull(),
-  },
-  (dropShopifyProducts) => {
-    return {
-      dropBundledProductUnique: uniqueIndex("drop_bundled_product_unique").on(
-        dropShopifyProducts.dropId,
-        dropShopifyProducts.bundledShopifyProductId,
-      ),
-    };
-  },
-);
-
-export const dropProductsRelations = relations(
-  DropBundledProducts,
-  ({ one }) => ({
-    drop: one(DropsTable, {
-      fields: [DropBundledProducts.dropId],
-      references: [DropsTable.id],
-    }),
-  }),
-);
-
 export type Drop = InferSelectModel<typeof DropsTable>;
-export type DropProduct = InferSelectModel<typeof DropBundledProducts>;
 
 export const CheckoutsTable = createTable(
   "checkouts",
@@ -97,7 +61,7 @@ export const CheckoutsTable = createTable(
   },
   (checkouts) => {
     return {
-      uniqueIdx: uniqueIndex("checkout_tx_hash_idx").on(
+      uniqueIdx: uniqueIndex("fp_checkout_tx_hash_idx").on(
         checkouts.transactionHash,
       ),
     };

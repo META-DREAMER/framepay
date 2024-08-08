@@ -28,7 +28,6 @@ export async function generateMetadata({ params }: Props): Promise<any> {
   const data = await getDropProductData(parseInt(dropId));
   const product = data?.productData;
   const option = product?.options?.[0];
-  console.log(data?.productData?.featuredImage);
   if (!option) {
     const frameImage = getImageForFrame(dropId, product?.featuredImage?.url);
     const frameMetadata = getFrameMetadata({
@@ -43,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
       image: frameImage,
     });
 
-    const metadata: Metadata = {
+    return {
       title: "Onchain Checkout Frame",
       description: "LFG",
       openGraph: {
@@ -55,9 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
       other: {
         ...frameMetadata,
       },
-    };
-
-    return metadata;
+    } satisfies Metadata;
   }
 
   const { buttons, buttonsState, imageText } = getButtonsWithState(option, 0);
@@ -72,7 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
     },
   });
 
-  const metadata: Metadata = {
+  return {
     title: "Onchain Checkout Frame",
     description: "LFG",
     openGraph: {
@@ -84,9 +81,7 @@ export async function generateMetadata({ params }: Props): Promise<any> {
     other: {
       ...frameMetadata,
     },
-  };
-
-  return metadata;
+  } satisfies Metadata;
 }
 
 export default function HomePage() {

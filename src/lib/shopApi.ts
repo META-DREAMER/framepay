@@ -83,6 +83,9 @@ export const getShopifyProductData = async (
               name
             }
             availableForSale
+            metafield(namespace: "custom", key: "bundled_products") {
+              value
+            }
             image {
               url
               height
@@ -114,11 +117,6 @@ export const createCheckout = async ({
   const input = {
     lineItems,
     customAttributes,
-    // customAttributes: [
-    //   { key: "Ethereum Address", value: ethAddress },
-    //   { key: "mintTxHash", value: mintTxHash },
-    //   { key: 'farcasterFid', value: farcasterFid }
-    // ],
   } satisfies CheckoutCreateInput;
 
   const { data, errors } = await client.request<CreateCheckoutMutation>(

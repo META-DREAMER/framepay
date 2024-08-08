@@ -1,18 +1,11 @@
 import "server-only";
 import { db } from "@/server/db";
 import { getDropOrderForTxHash } from "@/lib/shopAdminApi";
-import {
-  createCheckout,
-  getCheckout,
-  getShopifyProductData,
-} from "@/lib/shopApi";
+import { createCheckout, getShopifyProductData } from "@/lib/shopApi";
 import { publicViemClient } from "@/lib/viemClient";
 import { type ContractFunctionArgs, decodeFunctionData } from "viem";
 import { CheckoutsTable } from "@/server/db/schema";
-import type {
-  CheckoutLineItemInput,
-  SelectedOptionInput,
-} from "@shopify/hydrogen-react/storefront-api-types";
+import type { SelectedOptionInput } from "@shopify/hydrogen-react/storefront-api-types";
 import { StockManagerABI } from "@/app/_contracts/StockManager";
 import { type Checkout } from "../storefront-generated/storefront.types";
 
@@ -36,9 +29,6 @@ export const getCheckoutUrl = async ({
   // TODO: Authenticate payload to farcaster frame to ensure user matches the address that made the mint TX
   const dropData = await db.query.DropsTable.findFirst({
     where: (drops, { eq }) => eq(drops.id, dropId),
-    with: {
-      products: true,
-    },
   });
   if (!dropData) {
     throw new Error("Drop not found");
@@ -105,15 +95,22 @@ export const getCheckoutUrl = async ({
     };
   }
 
-  const productData = await Promise.all([
-    getShopifyProductData(dropData.shopifyProductId, selectedOptions),
-    ...dropData.products.map((product) => {
-      return getShopifyProductData(
-        product.bundledShopifyProductId,
-        selectedOptions,
-      );
-    }),
-  ]);
+  const productData = await getShopifyProductData(
+    dropData.shopifyProductId,
+    selectedOptions,
+  );
+
+  if (!productData?.variantBySelectedOptions) {
+    throw new Error(
+      `No variant found for selected options (id: ${productData?.id})!`,
+    );
+  }
+  const bundledVariantIds = productData.variantBySelectedOptions.metafield
+    ?.value
+    ? (JSON.parse(
+        productData.variantBySelectedOptions.metafield.value,
+      ) as string[])
+    : [];
 
   const createCheckoutRes = await createCheckout({
     customAttributes: [
@@ -121,21 +118,13 @@ export const getCheckoutUrl = async ({
       { key: "mintTxHash", value: mintTxHash },
       { key: "farcasterFid", value: farcasterFid.toString() },
     ],
-    lineItems: productData.reduce<CheckoutLineItemInput[]>((acc, product) => {
-      if (!product?.variantBySelectedOptions) {
-        throw new Error(
-          `No variant found for bundled product (id: ${product?.id})! Product options must match between bundled products and main product for a drop.`,
-        );
-        // return [...acc];
-      }
-      return [
-        ...acc,
-        {
-          variantId: product.variantBySelectedOptions.id,
-          quantity: 1,
-        },
-      ];
-    }, []),
+    lineItems: [
+      {
+        variantId: productData.variantBySelectedOptions.id,
+        quantity: 1,
+      },
+      ...bundledVariantIds.map((variantId) => ({ variantId, quantity: 1 })),
+    ],
   });
 
   if (!createCheckoutRes?.checkout) {
