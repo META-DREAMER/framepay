@@ -26,7 +26,6 @@ export const getCheckoutUrl = async ({
   farcasterFid,
   selectedOptions,
 }: GetCheckoutUrlArgs): Promise<Pick<Checkout, "id" | "webUrl"> | null> => {
-  // TODO: Authenticate payload to farcaster frame to ensure user matches the address that made the mint TX
   const dropData = await db.query.DropsTable.findFirst({
     where: (drops, { eq }) => eq(drops.id, dropId),
   });
@@ -105,12 +104,14 @@ export const getCheckoutUrl = async ({
       `No variant found for selected options (id: ${productData?.id})!`,
     );
   }
-  const bundledVariantIds = productData.variantBySelectedOptions.metafield
-    ?.value
-    ? (JSON.parse(
-        productData.variantBySelectedOptions.metafield.value,
-      ) as string[])
-    : [];
+
+  const isTestnet = dropData.chainId !== 8453;
+  const bundledVariantIds =
+    !isTestnet && productData.variantBySelectedOptions.metafield?.value
+      ? (JSON.parse(
+          productData.variantBySelectedOptions.metafield.value,
+        ) as string[])
+      : [];
 
   const createCheckoutRes = await createCheckout({
     customAttributes: [
