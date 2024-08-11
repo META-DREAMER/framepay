@@ -69,30 +69,4 @@ library NFTMetadataRenderer {
             );
     }
 
-    // /// Generates edition metadata from storage information as base64-json blob
-    // /// Combines the media data and metadata
-    // /// @param imageUrl URL of image to render for edition
-    // /// @param animationUrl URL of animation to render for edition
-    // function tokenMediaData(string memory imageUrl, string memory animationUrl, string memory vrmUrl) internal pure returns (string memory) {
-    //     bool hasImage = bytes(imageUrl).length > 0;
-    //     bool hasAnimation = bytes(animationUrl).length > 0;
-    //     bool hasVrm = bytes(vrmUrl).length > 0;
-    //     if (hasImage && hasAnimation && hasVrm) {
-    //         return string(abi.encodePacked('image": "', imageUrl, '", "animation_url": "', animationUrl, '", "vrm_url": "', vrmUrl, '", "'));
-    //     }
-    //     if (hasImage && hasVrm) {
-    //         return string(abi.encodePacked('image": "', imageUrl, '", "vrm_url": "', vrmUrl, '", "'));
-    //     }
-    //     if (hasImage && hasAnimation) {
-    //         return string(abi.encodePacked('image": "', imageUrl, '", "animation_url": "', animationUrl, '", "'));
-    //     }
-    //     if (hasImage) {
-    //         return string(abi.encodePacked('image": "', imageUrl, '", "'));
-    //     }
-    //     if (hasAnimation) {
-    //         return string(abi.encodePacked('animation_url": "', animationUrl, '", "'));
-    //     }
-
-    //     return "";
-    // }
 }
