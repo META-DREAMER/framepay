@@ -15,6 +15,15 @@ https://book.getfoundry.sh/
 
 ## Usage
 
+### Install
+
+```shell
+forge install OpenZeppelin/openzeppelin-contracts
+forge install thirdweb-dev/contracts
+```
+
+
+
 ### Build
 
 ```shell
@@ -45,12 +54,24 @@ $ forge snapshot
 $ anvil
 ```
 
+
+
 ### Deploy
 
+Setup deployer keystore with cast:
 ```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+cast wallet import deployer --interactive
 ```
 
+Deploy:
+```shell
+$ forge create ./src/StoreManager.sol:StoreManager --rpc-url $BASE_SEPOLIA_RPC --account deployer
+```
+
+Verify:
+```shell
+forge verify-contract <contractAddress> ./src/StoreManager.sol:StoreManager --chain 84532 --watch
+```
 ### Cast
 
 ```shell
