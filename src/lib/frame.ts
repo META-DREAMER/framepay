@@ -29,6 +29,13 @@ export const getFarcasterAccountAddress = (
   return interactor.verified_accounts[0] ?? interactor.custody_address;
 };
 
+export const getFarcasterAuthorAddress = (author: FrameValidationData["raw"]["action"]["cast"]["author"]) => {
+  // @ts-ignore verified_addresses is not in the types but is in the data
+  const verifiedAddress = author.verified_addresses?.eth_addresses[0] || author.verifications[0];
+
+  return verifiedAddress as `0x${string}` | undefined;
+}
+
 export const getImageForFrame = (
   dropId: string,
   productImageUrl: string,

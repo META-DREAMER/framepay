@@ -4,7 +4,7 @@ import { encodeFunctionData, zeroAddress } from "viem";
 import { FrameMintTxABI, StoreManagerABI } from "@/app/_contracts/StoreManager";
 import type { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 import { getDropProductData } from "@/lib/dropHelpers";
-import { getFarcasterAccountAddress } from "@/lib/frame";
+import { getFarcasterAccountAddress, getFarcasterAuthorAddress } from "@/lib/frame";
 import { publicViemClient } from "@/lib/viemClient";
 
 export async function POST(
@@ -29,6 +29,8 @@ export async function POST(
   }
   const referrer = message.raw.action.cast?.author;
   console.log({ referrer });
+
+  const referrerAddress = getFarcasterAuthorAddress(referrer);
 
   const drop = await getDropProductData(parseInt(params.dropId));
   console.log("Drop for tx", drop);
@@ -55,7 +57,7 @@ export async function POST(
       mintToAddress as `0x${string}`,
       tokenId,
       BigInt(1),
-      referrer?.custody_address as `0x${string}` || zeroAddress,
+      referrerAddress || zeroAddress,
       "0x0",
     ],
   });
