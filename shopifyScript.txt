@@ -1,0 +1,13 @@
+<script>
+{% if order.attributes["Ethereum Address"] %}
+    Shopify.Checkout.OrderStatus.addContentBox(
+     '<h2>$ROBOT Rewards</h2>',
+     '<p>You will receive $ROBOT tokens at {{ attributes["Ethereum Address"] }} in the next reward distribution (every 6-8 weeks). Future NFT wearables will also be sent to this address.</p>'
+    )
+  {% else %}
+    Shopify.Checkout.OrderStatus.addContentBox(
+     '<h2>$ROBOT Rewards</h2>',
+     '<p>In order to receive your $ROBOT rewards (and NFT wearables in the future), please add an ETH address in your account settings.</p>'
+    )
+  {% endif %}
+</script>
