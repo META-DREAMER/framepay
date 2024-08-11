@@ -1,17 +1,17 @@
 import { type FrameRequest, getFrameMessage } from "@coinbase/onchainkit/frame";
 import { type NextRequest, NextResponse } from "next/server";
-import { encodeFunctionData, parseEther } from "viem";
-import { FrameMintTxABI } from "@/app/_contracts/StockManager";
+import { encodeFunctionData, zeroAddress } from "viem";
+import { FrameMintTxABI, StoreManagerABI } from "@/app/_contracts/StoreManager";
 import type { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 import { getDropProductData } from "@/lib/dropHelpers";
 import { getFarcasterAccountAddress } from "@/lib/frame";
+import { publicViemClient } from "@/lib/viemClient";
 
 export async function POST(
   req: NextRequest,
   { params }: { params: { dropId: string } },
 ): Promise<NextResponse | Response> {
   const body: FrameRequest = await req.json();
-
   const { isValid, message } = await getFrameMessage(body, {
     neynarApiKey: process.env.NEYNAR_API_KEY,
   });
@@ -27,18 +27,35 @@ export async function POST(
   if (!mintToAddress) {
     return new NextResponse("No wallet address provided", { status: 500 });
   }
+  const referrer = message.raw.action.cast?.author;
+  console.log({ referrer });
+
   const drop = await getDropProductData(parseInt(params.dropId));
   console.log("Drop for tx", drop);
   if (!drop) {
     return new NextResponse("No drop exist", { status: 500 });
   }
+
+  const contractAddress = drop.dropData.contractAddress as `0x${string}`;
+  const tokenId = BigInt(drop.dropData.tokenId);
+
+  const nftData = await publicViemClient.readContract({
+    address: contractAddress,
+    abi: StoreManagerABI,
+    functionName: 'nftStore',
+    args: [tokenId],
+  });
+
+  const price = nftData[5];
+
   const data = encodeFunctionData({
     abi: FrameMintTxABI,
     functionName: "mint",
     args: [
       mintToAddress as `0x${string}`,
-      BigInt(drop.dropData.tokenId),
+      tokenId,
       BigInt(1),
+      referrer?.custody_address as `0x${string}` || zeroAddress,
       "0x0",
     ],
   });
@@ -50,8 +67,8 @@ export async function POST(
     params: {
       abi: FrameMintTxABI,
       data,
-      to: drop.dropData.contractAddress as `0x${string}`,
-      value: parseEther(drop.dropData.ethPrice).toString(), // 0.00004 ETH
+      to: contractAddress,
+      value: price.toString(), // 0.00004 ETH
     },
   };
   return NextResponse.json(txData);

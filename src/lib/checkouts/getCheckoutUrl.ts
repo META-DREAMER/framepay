@@ -6,10 +6,10 @@ import { publicViemClient } from "@/lib/viemClient";
 import { type ContractFunctionArgs, decodeFunctionData } from "viem";
 import { CheckoutsTable } from "@/server/db/schema";
 import type { SelectedOptionInput } from "@shopify/hydrogen-react/storefront-api-types";
-import { StockManagerABI } from "@/app/_contracts/StockManager";
+import { StoreManagerABI } from "@/app/_contracts/StoreManager";
 import { type Checkout } from "../storefront-generated/storefront.types";
 
-type MintArgs = ContractFunctionArgs<typeof StockManagerABI, "payable", "mint">;
+type MintArgs = ContractFunctionArgs<typeof StoreManagerABI, "payable", "mint">;
 
 type GetCheckoutUrlArgs = {
   expectedUserAddress: string;
@@ -49,7 +49,7 @@ export const getCheckoutUrl = async ({
   const contractAddress = transaction.to;
 
   const { args, functionName } = decodeFunctionData({
-    abi: StockManagerABI,
+    abi: StoreManagerABI,
     data: transaction.input,
   });
   const [to, tokenId] = args as MintArgs;
