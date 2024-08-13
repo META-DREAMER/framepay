@@ -69,7 +69,7 @@ export async function POST(
     params.dropId,
     drop.productData?.variantBySelectedOptions?.image?.url ||
       drop.productData?.featuredImage?.url,
-    "Provide your shipping details with the button below.",
+    "Minting Succeeded!",
   );
   return new NextResponse(
     getFrameHtmlResponse({

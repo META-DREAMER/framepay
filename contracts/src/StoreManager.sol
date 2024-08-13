@@ -128,7 +128,7 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
     }
 
 
-    function uri(uint256 id) external view override returns (string memory) {
+    function uri(uint256 id) public view override returns (string memory) {
         return NFTMetadataRenderer.createMetadataEdition(
             nftStore[id].name, nftStore[id].description, nftStore[id].imageURI, nftStore[id].properties, id
         );
@@ -251,7 +251,7 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
         super._update(from, to, ids, values);
     }
 
-    function supportsInterface(bytes4 interfaceId) external view override(ERC1155, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC1155, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }
