@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getFrameMetadata } from "@coinbase/onchainkit/frame";
 import type { Metadata } from "next";
+import Image from 'next/image'
+
 import { env } from "@/env";
 
 const frameMetadata = getFrameMetadata({
@@ -20,13 +22,13 @@ const frameMetadata = getFrameMetadata({
 });
 
 export const metadata: Metadata = {
-  title: "Onchain Checkout Frame",
-  description: "LFG",
+  title: "FramePay",
+  description: "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
   openGraph: {
-    title: "Onchain Checkout Frame",
+    title: "FramePay",
     description:
       "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
-    images: [`${env.NEXT_PUBLIC_URL}/park-1.png`],
+    images: [`${env.NEXT_PUBLIC_URL}/FramePay.png`],
   },
   other: {
     ...frameMetadata,
@@ -35,14 +37,16 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-flatGray">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Onchain Checkout Frame
-        </h1>
-        {/* github link */}
+        <Image
+          src="/FramePay.png"
+          width={250}
+          height={250}
+          alt="FramePay Logo"
+        />
         <Link
-          className="font-mono text-xl font-bold text-gray-400 hover:underline"
+          className="font-mono text-xl font-bold text-gray-800 hover:underline"
           href="https://github.com/META-DREAMER/framepay"
           target={"_blank"}
         >

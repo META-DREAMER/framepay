@@ -62,6 +62,7 @@ export const getShopifyProductData = async (
           title
           handle
           description
+          descriptionHtml
           featuredImage {
             url
             height
@@ -70,6 +71,13 @@ export const getShopifyProductData = async (
           options {
             name
             values
+          }
+          images(first:10) {
+            nodes {
+              width
+              height
+              url
+            }
           }
           variantBySelectedOptions(
             selectedOptions: $selectedOptions
