@@ -29,9 +29,9 @@ export const getFarcasterAccountAddress = (
   return interactor.verified_accounts[0] ?? interactor.custody_address;
 };
 
-export const getFarcasterAuthorAddress = (author: FrameValidationData["raw"]["action"]["cast"]["author"]) => {
+export const getFarcasterAuthorAddress = (author: FrameValidationData["raw"]["action"]["cast"]["author"] | null) => {
   // @ts-ignore verified_addresses is not in the types but is in the data
-  const verifiedAddress = author.verified_addresses?.eth_addresses[0] || author.verifications[0];
+  const verifiedAddress = author?.verified_addresses?.eth_addresses[0] || author?.verifications[0];
 
   return verifiedAddress as `0x${string}` | undefined;
 }
@@ -43,6 +43,7 @@ export const getImageForFrame = (
 ) => {
   const imageUrl = new URL(`${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/img`);
   imageUrl.searchParams.set("imageUrl", productImageUrl);
+  imageUrl.searchParams.set("a", 'jkfhe');
   if (bottomText) imageUrl.searchParams.set("bottomText", bottomText);
   return {
     src: imageUrl.toString(),
