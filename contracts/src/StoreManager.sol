@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity ^0.8.26;
+pragma solidity 0.8.26;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -16,7 +16,8 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
     uint256 private _nextId;
 
     /// @dev equivalent to 100%
-    uint256 private constant MAX_BPS = 10_000;
+    uint256 private constant TOTAL_BPS = 10_000;
+    uint256 private constant MAX_BPS = 2_000;
 
     mapping(uint256 => EcommerceNFT) public nftStore; // token id => NFT Data
 
@@ -32,6 +33,15 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
         address fundReceiver,
         uint16 referralBps
     );
+    event UpdatedImageURI(uint256 indexed id, string newImageURI);
+    event UpdatedProperties(uint256 indexed id, string newProperties);
+    event UpdatedDescription(uint256 indexed id, string newDescription);
+    event UpdatedName(uint256 indexed id, string newName);
+    event UpdatedSupply(uint256 indexed id, uint256 newSupply);
+    event UpdatedPrice(uint256 indexed id, uint256 newPrice);
+    event UpdatedOwner(uint256 indexed id, address newOwner);
+    event UpdatedFundReceiver(uint256 indexed id, address newFundReceiver);
+    event UpdatedReferralBps(uint256 indexed id, uint16 newBps);
 
     error InsufficientEther(uint256 required, uint256 provided);
     error ExceedsMaxSupply(uint256 requested, uint256 available);
@@ -55,7 +65,7 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
         _nextId = 1;
     }
 
-    function grantManagerRole(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function grantManagerRole(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(MANAGER_ROLE, account);
     }
 
@@ -72,10 +82,10 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
         uint256 maxSupply,
         address fundReceiver,
         uint16 referralBps
-    ) public onlyRole(MANAGER_ROLE) returns (EcommerceNFT memory) {
+    ) external onlyRole(MANAGER_ROLE) returns (EcommerceNFT memory) {
         require(maxSupply > 0, "Max supply must be greater than 0");
         require(price > 0, "Price must be greater than 0");
-        require(referralBps < 2000, "Max referral fee is 20%");
+        require(referralBps <= MAX_BPS, "Max referral fee is 20%");
         require(fundReceiver != address(0), "Invalid fund receiver");
 
         uint256 id = _nextId++;
@@ -110,15 +120,15 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
             revert InsufficientEther({required: totalCost, provided: msg.value});
         }
 
-        _mint(to, id, amount, data);
-        emit Minted(to, id, amount, data);
-
         // Collect price
         _distributeFunds(id, totalCost, referrer);
+
+        _mint(to, id, amount, data);
+        emit Minted(to, id, amount, data);
     }
 
 
-    function uri(uint256 id) public view override returns (string memory) {
+    function uri(uint256 id) external view override returns (string memory) {
         return NFTMetadataRenderer.createMetadataEdition(
             nftStore[id].name, nftStore[id].description, nftStore[id].imageURI, nftStore[id].properties, id
         );
@@ -133,7 +143,7 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
             revert AddressInsufficientBalance(address(this));
         }
 
-        (bool success, ) = to.call{ value: amount }("");
+        (bool success,) = to.call{value: amount}("");
         require(success, "native token transfer failed");
     }
 
@@ -161,61 +171,73 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
         _safeTransferNativeToken(saleRecipient, totalAmount - referralFee);
     }
 
-    function updateImageURI(uint256 id, string memory newuri) public onlyRole(MANAGER_ROLE) {
+
+    function updateImageURI(uint256 id, string memory newuri) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
         nftStore[id].imageURI = newuri;
+        emit UpdatedImageURI(id, newuri);
     }
 
-    function updateProperties(uint256 id, string memory newProperties) public onlyRole(MANAGER_ROLE) {
+    function updateProperties(uint256 id, string memory newProperties) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
         nftStore[id].properties = newProperties;
+        emit UpdatedProperties(id, newProperties);
     }
 
-    function updateDescription(uint256 id, string memory newDescription) public onlyRole(MANAGER_ROLE) {
+    function updateDescription(uint256 id, string memory newDescription) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
         nftStore[id].description = newDescription;
+        emit UpdatedDescription(id, newDescription);
     }
 
-    function updateName(uint256 id, string memory newName) public onlyRole(MANAGER_ROLE) {
+    function updateName(uint256 id, string memory newName) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
         nftStore[id].name = newName;
+        emit UpdatedName(id, newName);
     }
 
-    function updateSupply(uint256 id, uint256 newSupply) public onlyRole(MANAGER_ROLE) {
+    function updateSupply(uint256 id, uint256 newSupply) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
         nftStore[id].maxSupply = newSupply;
+        emit UpdatedSupply(id, newSupply);
     }
 
-    function updatePrice(uint256 id, uint256 newPrice) public onlyRole(MANAGER_ROLE) {
+    function updatePrice(uint256 id, uint256 newPrice) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
         nftStore[id].price = newPrice;
+        emit UpdatedPrice(id, newPrice);
     }
 
-    function updateOwner(uint256 id, address newCreator) public onlyRole(MANAGER_ROLE) {
+    function updateOwner(uint256 id, address newCreator) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
+        require(newCreator != address(0), "Invalid newCreator");
         nftStore[id].creator = newCreator;
+        emit UpdatedOwner(id, newCreator);
     }
 
-    function updateFundReceiver(uint256 id, address newFundReceiver) public onlyRole(MANAGER_ROLE) {
+    function updateFundReceiver(uint256 id, address newFundReceiver) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
+        require(newFundReceiver != address(0), "Invalid newFundReceiver");
         nftStore[id].fundReceiver = newFundReceiver;
+        emit UpdatedFundReceiver(id, newFundReceiver);
     }
 
-    function updateReferralBps(uint256 id, uint16 newBps) public onlyRole(MANAGER_ROLE) {
+    function updateReferralBps(uint256 id, uint16 newBps) external {
         require(nftStore[id].creator == msg.sender, "not valid manager");
-        require(newBps < 2000, "Max referral fee is 20%");
+        require(newBps <= MAX_BPS, "Max referral fee is 20%");
         nftStore[id].referralBps = newBps;
+        emit UpdatedReferralBps(id, newBps);
     }
 
-    function setURI(string memory newuri) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setURI(string memory newuri) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setURI(newuri);
     }
 
-    function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
     }
 
@@ -229,7 +251,7 @@ contract StoreManager is ERC1155, AccessControl, ERC1155Pausable, ERC1155Burnabl
         super._update(from, to, ids, values);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view override(ERC1155, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) external view override(ERC1155, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }
