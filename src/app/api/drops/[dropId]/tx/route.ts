@@ -62,7 +62,6 @@ export async function POST(
     ],
   });
 
-  console.log("Data for TX", data);
   const txData: FrameTransactionResponse = {
     chainId: `eip155:${drop.dropData.chainId}`,
     method: "eth_sendTransaction",
@@ -73,5 +72,7 @@ export async function POST(
       value: price.toString(), // 0.00004 ETH
     },
   };
+  console.log("Data for TX", txData);
+
   return NextResponse.json(txData);
 }
