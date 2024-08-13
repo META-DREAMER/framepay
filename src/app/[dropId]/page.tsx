@@ -66,7 +66,7 @@ export default async function HomePage({ params }: Props) {
             <div className="space-y-4">
             <Link
                 target={"_blank"}
-                href={`https://warpcast.com/~/compose?text=${encodeURIComponent("The /onchainsummer Collection 🔵🏝️🌞")}&embeds[]=https%3A%2F%2Fframe.mf.app%2F1`}>
+                href={`https://warpcast.com/~/compose?text=${encodeURIComponent("The /onchainsummer Collection 🔵🏝️🌞")}&embeds[]=https%3A%2F%2Fframe.mf.app%2F${dropId}`}>
                 <Button className="w-full bg-warpcastPurple hover:bg-warpcastPurple/90 text-lg  py-3">
                   <FarcasterIcon className="mr-2 h-4 w-4"/>
                   Share on WarpCast
