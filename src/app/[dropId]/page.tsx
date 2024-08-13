@@ -43,12 +43,11 @@ export async function generateMetadata({ params }: Props): Promise<any> {
     });
 
     return {
-      title: "Onchain Checkout Frame",
-      description: "LFG",
+      title: product?.title || "FramePay",
+      description: product?.description,
       openGraph: {
-        title: "Onchain Checkout Frame",
-        description:
-          "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
+        title: product?.title || "FramePay",
+        description: product?.description || "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
         images: [frameImage.src],
       },
       other: {
@@ -58,10 +57,11 @@ export async function generateMetadata({ params }: Props): Promise<any> {
   }
 
   const { buttons, buttonsState, imageText } = getButtonsWithState(option, 0);
+  const frameImage = getImageForFrame(dropId, product?.featuredImage?.url, imageText);
   const frameMetadata = getFrameMetadata({
     // @ts-ignore
     buttons,
-    image: getImageForFrame(dropId, product?.featuredImage?.url, imageText),
+    image: frameImage,
     postUrl: `${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/frame`,
     state: {
       selections: [],
@@ -70,13 +70,12 @@ export async function generateMetadata({ params }: Props): Promise<any> {
   });
 
   return {
-    title: "Onchain Checkout Frame",
-    description: "LFG",
+    title: product?.title || "FramePay",
+    description: product?.description,
     openGraph: {
-      title: "Onchain Checkout Frame",
-      description:
-        "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
-      images: [product?.featuredImage?.url],
+      title: product?.title || "FramePay",
+      description: product?.description || "Farcaster Frame to purchase a product onchain and checkout with Shopify.",
+      images: [frameImage.src],
     },
     other: {
       ...frameMetadata,

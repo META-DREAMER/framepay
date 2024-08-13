@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getDropProductData } from "@/lib/dropHelpers";
 
+export const revalidate = 0
 export async function GET(
   request: Request,
   { params }: { params: { dropId: string } },
@@ -16,36 +17,36 @@ export async function GET(
         style={{
           display: "flex",
           color: "black",
-          background: "#f0f0f0",
+          background: "#ececec",
           fontWeight: "bold",
           width: "100%",
           height: "100%",
           flexDirection: "column",
-          paddingLeft: 24,
-          paddingRight: 24,
+          paddingLeft: 8,
+          paddingRight: 8,
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <p tw="bg-blue-800 text-6xl font-bold font-mono text-white px-4">
+        <p tw="text-6xl text-blue-800 px-4">
           {drop?.dropData.name}
         </p>
-        <p tw="bg-blue-800 text-5xl font-bold text-white px-4">
+        <p tw="text-5xl text-blue-800 px-4">
           {drop?.dropData.ethPrice} ETH
         </p>
         {imageUrl ? (
           <img
-            width="1000"
-            height="800"
+            width="1200"
+            height="960"
             src={imageUrl || ""}
             style={{
-              borderRadius: 12,
+              borderRadius: 0,
               objectFit: "cover",
             }}
           />
         ) : null}
         {bottomText ? (
-          <p tw="text-blue-800 text-5xl font-bold mt-8 max-w-[800px] text-center">
+          <p tw="text-blue-800 text-5xl font-bold mt-4 max-w-[800px] text-center">
             {bottomText}
           </p>
         ) : null}

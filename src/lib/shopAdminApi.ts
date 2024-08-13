@@ -39,15 +39,15 @@ const dropOrdersQuery = gql`
 
 type OrderNode = DropOrdersQuery["orders"]["nodes"][0];
 
-export const findOrderWithTxHash = (orders: OrderNode[], burnTxHash: string) =>
+export const findOrderWithTxHash = (orders: OrderNode[], txHash: string) =>
   orders.find((o) =>
     o?.customAttributes.find(
-      ({ value }) => value && value.toLowerCase() === burnTxHash.toLowerCase(),
+      ({ value }) => value && value.toLowerCase() === txHash.toLowerCase(),
     ),
   );
 
 export const getDropOrderForTxHash = async (
-  burnTxHash: string,
+  txHash: string,
   after?: string,
 ): Promise<OrderNode | null> => {
   const { data, errors } = await adminClient.request<DropOrdersQuery>(
@@ -65,7 +65,7 @@ export const getDropOrderForTxHash = async (
     );
   }
 
-  const existingOrder = findOrderWithTxHash(data.orders.nodes, burnTxHash);
+  const existingOrder = findOrderWithTxHash(data.orders.nodes, txHash);
 
   if (existingOrder) {
     return existingOrder;
@@ -74,7 +74,7 @@ export const getDropOrderForTxHash = async (
   // paginate results in case order not yet found
   if (data.orders.pageInfo.hasNextPage && data.orders.pageInfo.endCursor) {
     return await getDropOrderForTxHash(
-      burnTxHash,
+      txHash,
       data.orders.pageInfo.endCursor,
     );
   }

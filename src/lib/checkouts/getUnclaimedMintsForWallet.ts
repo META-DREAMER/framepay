@@ -17,6 +17,7 @@ export const getUnclaimedMintsForWallet = async (
   if (!dropData) {
     throw new Error("Drop not found");
   }
+
   const mintEvents = await publicViemClient.getContractEvents({
     address: dropData.contractAddress as `0x${string}`,
     abi: StoreManagerABI,
