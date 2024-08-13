@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getDropProductData } from "@/lib/dropHelpers";
 
-export const revalidate = 0
 export async function GET(
   request: Request,
   { params }: { params: { dropId: string } },

@@ -43,7 +43,7 @@ export const getImageForFrame = (
 ) => {
   const imageUrl = new URL(`${env.NEXT_PUBLIC_URL}/api/drops/${dropId}/img`);
   imageUrl.searchParams.set("imageUrl", productImageUrl);
-  imageUrl.searchParams.set("a", 'jkfhe');
+  imageUrl.searchParams.set("a", 'cache');
   if (bottomText) imageUrl.searchParams.set("bottomText", bottomText);
   return {
     src: imageUrl.toString(),
