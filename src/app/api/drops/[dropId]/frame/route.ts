@@ -1,7 +1,7 @@
 import { type FrameState } from "@/app/[dropId]/page";
 import { env } from "@/env";
 import { getDropProductData } from "@/lib/dropHelpers";
-import { getButtonsWithState, getImageForFrame } from "@/lib/frame";
+import { getButtonsWithState, getFarcasterAccountAddress, getImageForFrame } from "@/lib/frame";
 import { getShopifyProductData } from "@/lib/shopApi";
 import {
   getFrameMessage,
@@ -9,6 +9,8 @@ import {
   type FrameButtonMetadata,
 } from "@coinbase/onchainkit/frame";
 import { type NextRequest, NextResponse } from "next/server";
+import { getUnclaimedMintsForWallet } from "@/lib/checkouts/getUnclaimedMintsForWallet";
+import { getCheckoutUrl } from "@/lib/checkouts/getCheckoutUrl";
 
 export async function POST(
   req: NextRequest,
@@ -81,6 +83,42 @@ export async function POST(
   let image = getImageForFrame(dropId, productData.featuredImage?.url);
 
   if (productWithSelectedOptions?.variantBySelectedOptions) {
+    const mintToAddress = getFarcasterAccountAddress(message.interactor);
+
+    const unclaimedMints = await getUnclaimedMintsForWallet(parseInt(dropId), mintToAddress as `0x${string}`);
+
+    if (unclaimedMints.length > 0 && unclaimedMints[0]) {
+      const fid = message.interactor.fid;
+      const checkout = await getCheckoutUrl({
+        expectedUserAddress: mintToAddress,
+        dropId: parseInt(params.dropId),
+        mintTxHash: unclaimedMints[0],
+        farcasterFid: fid,
+        selectedOptions: state.selections,
+      });
+      if (!checkout) {
+        return new NextResponse("No checkout available", { status: 500 });
+      }
+      const frameImg = getImageForFrame(
+        params.dropId,
+        productData?.variantBySelectedOptions?.image?.url ||
+        productData?.featuredImage?.url,
+        "Unclaimed Mint Found!",
+      );
+      return new NextResponse(
+        getFrameHtmlResponse({
+          buttons: [
+            {
+              label: `Complete Checkout`,
+              action: "link",
+              target: checkout?.webUrl,
+            },
+          ],
+          image: frameImg,
+        }),
+      );
+    }
+
     // User has selected all options
     renderedButtons = [
       {
@@ -124,6 +162,7 @@ export async function POST(
     );
     state.buttonsState = buttonsState;
   } else {
+
     const remainingOptions = productData.options.filter(
       (option) =>
         !state.selections.some(
