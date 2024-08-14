@@ -86,7 +86,7 @@ export async function POST(
     const mintToAddress = getFarcasterAccountAddress(message.interactor);
 
     const unclaimedMints = await getUnclaimedMintsForWallet(parseInt(dropId), mintToAddress as `0x${string}`);
-
+    console.log({ unclaimedMints })
     if (unclaimedMints.length > 0 && unclaimedMints[0]) {
       const fid = message.interactor.fid;
       const checkout = await getCheckoutUrl({
@@ -99,24 +99,28 @@ export async function POST(
       if (!checkout) {
         return new NextResponse("No checkout available", { status: 500 });
       }
-      const frameImg = getImageForFrame(
-        params.dropId,
-        productData?.variantBySelectedOptions?.image?.url ||
-        productData?.featuredImage?.url,
-        "Unclaimed Mint Found!",
-      );
-      return new NextResponse(
-        getFrameHtmlResponse({
-          buttons: [
-            {
-              label: `Complete Checkout`,
-              action: "link",
-              target: checkout?.webUrl,
-            },
-          ],
-          image: frameImg,
-        }),
-      );
+
+      if (!checkout.completedOrder) {
+        const frameImg = getImageForFrame(
+          params.dropId,
+          productData?.variantBySelectedOptions?.image?.url ||
+          productData?.featuredImage?.url,
+          "Unclaimed Mint Found!",
+        );
+        return new NextResponse(
+          getFrameHtmlResponse({
+            buttons: [
+              {
+                label: `Complete Checkout`,
+                action: "link",
+                target: checkout?.webUrl,
+              },
+            ],
+            image: frameImg,
+          }),
+        );
+      }
+
     }
 
     // User has selected all options

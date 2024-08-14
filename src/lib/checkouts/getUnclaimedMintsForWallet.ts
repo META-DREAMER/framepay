@@ -29,7 +29,7 @@ export const getUnclaimedMintsForWallet = async (
   }
   const mintTxHashes = mintEvents.map((e) => e.transactionHash);
   const allOrders = await getAllOnchainOrders();
-
+  console.log(mintTxHashes, allOrders.map(o => o.customAttributes));
   return mintTxHashes.filter(
     (txHash) =>
       !allOrders.some((o) =>

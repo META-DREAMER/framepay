@@ -16,7 +16,7 @@ const adminClient = createAdminApiClient({
 const dropOrdersQuery = gql`
   query dropOrders($after: String, $first: Int = 50) {
     orders(
-      query: "channel:headless"
+      query: "tag:framepay-order"
       first: $first
       reverse: true
       after: $after

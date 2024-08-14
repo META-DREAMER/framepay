@@ -19,13 +19,15 @@ type GetCheckoutUrlArgs = {
   selectedOptions: SelectedOptionInput[];
 };
 
+type GetCheckoutUrlResponse = Pick<Checkout, "id" | "webUrl"> & { completedOrder?: any };
+
 export const getCheckoutUrl = async ({
   expectedUserAddress,
   dropId,
   mintTxHash,
   farcasterFid,
   selectedOptions,
-}: GetCheckoutUrlArgs): Promise<Pick<Checkout, "id" | "webUrl"> | null> => {
+}: GetCheckoutUrlArgs): Promise<GetCheckoutUrlResponse | null> => {
   const dropData = await db.query.DropsTable.findFirst({
     where: (drops, { eq }) => eq(drops.id, dropId),
   });
@@ -89,7 +91,7 @@ export const getCheckoutUrl = async ({
     return {
       id: existingCheckout.shopifyCheckoutId,
       webUrl: existingCheckout.url,
-      // completedOrder: existingOrder,
+      completedOrder: !!existingOrder,
       // checkoutStatus,
     };
   }
